@@ -6,17 +6,32 @@
 3. Run `./scripts/build-release.sh`.
 4. Install the generated `.plasmoid` in a clean Plasma user session and verify
    profile editing, temporary overrides, AC changes, HDMI changes, and docking.
-5. Commit the release, create an annotated tag such as `v2.8.9`, and push it.
+5. Commit the release, create an annotated tag such as `v2.8.10`, and push it.
 6. Create the Git hosting release from that tag and attach the `.plasmoid` and
    `.sha256` files from `dist/`.
+7. For the store.kde.org listing, state prominently that **Get New Widgets only
+   installs the unprivileged widget**. Users who want to change charge limits
+   must also download the source package and run `./install.sh` as their regular
+   desktop user. Use `docs/screenshots/popup.png` as the primary image.
+
+## Suggested store requirements
+
+KDE Plasma 6 and a Linux battery driver exposing
+`charge_control_start_threshold` and `charge_control_end_threshold` are
+required. Installation through Get New Widgets provides status and
+power-profile features only. To change charge limits, download the source
+package and run `./install.sh` as your regular desktop user; it installs a
+narrowly scoped root helper and PolicyKit rule and will ask for `sudo` once.
 
 ## Suggested release title
 
-Battery Charge Limits 2.8.9
+Battery Charge Limits 2.8.10
 
 ## Suggested release notes
 
-Battery Charge Limits 2.8.9 adds live charging statistics, a layered battery
+Battery Charge Limits 2.8.10 clarifies that the docking toggle controls automatic
+Normal/Docked mode switching. The release also includes the live charging
+statistics, layered battery
 indicator, automatic KDE power-profile switching, per-profile configuration,
 temporary overrides, and a reorganized Plasma 6 popup. See `CHANGELOG.md` for
 the complete list.

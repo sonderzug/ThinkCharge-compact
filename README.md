@@ -18,7 +18,7 @@ thresholds while showing live battery and power-profile information.
 - Automatic KDE power profiles for battery, AC, and HDMI operation
 - Per-charge-profile Power Save, Balanced, and Performance rules
 - Temporary manual power-profile override
-- Optional automatic docking-profile selection
+- Optional automatic switching between Normal and Docked mode
 
 ## Requirements
 
@@ -61,8 +61,15 @@ already installed:
 
 ```sh
 kpackagetool6 --type Plasma/Applet --install \
-  org.kde.plasma.batterythresholds-2.8.9.plasmoid
+  org.kde.plasma.batterythresholds-2.8.10.plasmoid
 ```
+
+The same limitation applies when installing from KDE's **Get New Widgets**
+dialog or store.kde.org: Plasma can install the widget, but it cannot install
+the root-owned helper or its PolicyKit rule. The widget shows a setup warning
+until you download the source package and run `./install.sh` as your regular
+desktop user. Status and power-profile features remain available without the
+helper; changing charge thresholds does not.
 
 ## Upgrade
 
@@ -98,6 +105,11 @@ Profile edits are staged until Save is selected. Revert restores the last saved
 values. Automatic power-profile selection runs only on a relevant state change,
 so a manual selection made elsewhere in Plasma is not overwritten every ten
 seconds. The explicit override remains active until Automatic is selected.
+
+The **Automatic mode switching** toggle enables or disables automatic selection
+of the Docked profile. When enabled, AC power plus an active external display
+selects Docked mode after a short debounce; disconnecting either returns to the
+saved Normal profile. The toggle does not force Docked mode by itself.
 
 ## Security
 

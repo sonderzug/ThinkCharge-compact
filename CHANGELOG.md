@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here.
 
+## 2.8.10 — 2026-08-06
+
+- Rename the docking toggle to clarify that it enables or disables automatic
+  Normal/Docked mode switching rather than forcing Docked mode.
+
 ## 2.8.9 — 2026-08-06
 
 - Show current charge, configured limit, charge/discharge power, and estimated

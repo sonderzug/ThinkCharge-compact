@@ -19,6 +19,19 @@ Item {
         anchors.right: parent.right
         anchors.margins: Kirigami.Units.largeSpacing
         spacing: Kirigami.Units.smallSpacing
+        Kirigami.InlineMessage {
+            Layout.fillWidth: true
+            visible: root.helperChecked && !root.helperInstalled
+            type: Kirigami.MessageType.Warning
+            text: i18n("Setup required: installing the widget alone cannot change charge limits. Download the source package and run ./install.sh as your regular user.")
+            actions: [
+                Kirigami.Action {
+                    text: i18n("Installation instructions")
+                    icon.name: "internet-web-browser"
+                    onTriggered: Qt.openUrlExternally("https://github.com/GregorBoxer-sudo/ThinkCharge#install-from-git")
+                }
+            ]
+        }
         Kirigami.InlineMessage { Layout.fillWidth: true; visible: root.statusMessage.length > 0; text: root.statusMessage; type: root.supported ? Kirigami.MessageType.Information : Kirigami.MessageType.Warning }
         Controls.Label { text: i18n("Charge profile and automatic power profile"); font.bold: true }
         RowLayout {
@@ -89,6 +102,7 @@ Item {
             Layout.fillWidth: true
             Controls.Button {
                 text: i18n("Full")
+                enabled: root.helperInstalled
                 checkable: true
                 checked: root.temporaryMode === "FULL"
                 Layout.preferredHeight: Kirigami.Units.gridUnit * 1.6
@@ -98,6 +112,7 @@ Item {
             }
             Controls.Button {
                 text: i18n("Safe full")
+                enabled: root.helperInstalled
                 checkable: true
                 checked: root.temporaryMode === "SAFE_FULL"
                 Layout.preferredHeight: Kirigami.Units.gridUnit * 1.6
@@ -121,7 +136,7 @@ Item {
         Controls.Label { text: i18n("Docking"); font.bold: true }
         RowLayout {
             Layout.fillWidth: true
-            Controls.Label { text: i18n("Automatic docking"); Layout.fillWidth: true }
+            Controls.Label { text: i18n("Automatic mode switching"); Layout.fillWidth: true }
             Controls.Switch { checked: Plasmoid.configuration.dockingEnabled; onToggled: { Plasmoid.configuration.dockingEnabled = checked; root.determineDisplays() } }
         }
         RowLayout {

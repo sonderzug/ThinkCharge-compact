@@ -14,6 +14,8 @@ PlasmoidItem {
     property int currentStart: -1
     property int currentEnd: -1
     property bool supported: false
+    property bool helperInstalled: false
+    property bool helperChecked: false
     property bool acOnline: false
     property int batteryCount: 0
     property real powerWatts: -1
@@ -277,6 +279,9 @@ PlasmoidItem {
                 powerWatts = isNaN(rawPower) ? -1 : Math.abs(rawPower) / 1000000
                 energyNowWh = isNaN(rawEnergyNow) ? -1 : rawEnergyNow / 1000000
                 energyFullWh = isNaN(rawEnergyFull) ? -1 : rawEnergyFull / 1000000
+            } else if (f[0] === "HELPER") {
+                helperInstalled = f[1] === "1"
+                helperChecked = true
             } else if (f[0] === "DISPLAY") {
                 foundDisplays.push({ name: f[1], connection: f[2], enabled: f[3], kind: f[4], edid: f[5] })
             } else if (f[0] === "POWER_PROFILE") {
@@ -293,7 +298,7 @@ PlasmoidItem {
         reconcile()
     }
     function reconcile() {
-        if (!supported || applying || editing) return
+        if (!supported || !helperInstalled || applying || editing) return
         if (currentStart === desiredStart && currentEnd === desiredEnd) return
         applying = true
         var cmd = "pkexec " + shellQuote(helperPath) + " set " + shellQuote(batteryName)
