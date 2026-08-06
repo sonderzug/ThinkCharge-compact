@@ -1,0 +1,10 @@
+// Replace @AUTHORIZED_USER@ before installing this file as root.
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.policykit.exec" &&
+        action.lookup("program") == "/usr/local/libexec/battery-threshold-helper" &&
+        action.lookup("user") == "root" &&
+        subject.user == "@AUTHORIZED_USER@" &&
+        subject.local && subject.active) {
+        return polkit.Result.YES;
+    }
+});

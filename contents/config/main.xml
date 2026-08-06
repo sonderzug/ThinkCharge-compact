@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile name=""/>
+    <group name="General">
+        <entry name="lastEndThreshold" type="Int">
+            <default>80</default>
+        </entry>
+        <entry name="lastGap" type="Int">
+            <default>5</default>
+        </entry>
+        <entry name="profilesJson" type="String">
+            <default></default>
+        </entry>
+        <entry name="selectedProfileId" type="String">
+            <default>default</default>
+        </entry>
+        <entry name="normalProfileId" type="String">
+            <default>default</default>
+        </entry>
+        <entry name="dockingEnabled" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="dockedProfileId" type="String">
+            <default>docked</default>
+        </entry>
+        <entry name="internalDisplayId" type="String">
+            <default>auto</default>
+        </entry>
+    </group>
+</kcfg>

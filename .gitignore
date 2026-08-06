@@ -1,0 +1,17 @@
+# Release output
+/dist/
+/*.plasmoid
+/*.zip
+/*.tar.gz
+
+# Editor and operating-system files
+*~
+*.swp
+*.swo
+.DS_Store
+.idea/
+.vscode/
+
+# Local test/cache output
+/.cache/
+/build/

@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Conserve Mode KDE contributors"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Control generic Linux battery charge thresholds",
+        "Icon": "battery",
+        "Id": "org.kde.plasma.batterythresholds",
+        "License": "GPL-3.0-or-later",
+        "Name": "Battery Charge Limits",
+        "Version": "2.8.9",
+        "Website": "https://github.com/GregorBoxer-sudo/ThinkCharge"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

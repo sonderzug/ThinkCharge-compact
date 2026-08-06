@@ -1,0 +1,95 @@
+#!/bin/sh
+set -eu
+
+# One snapshot for the unprivileged widget: battery, AC and DRM outputs.
+battery_count=0
+battery_name=
+capacity=?
+battery_status=Unknown
+start=?
+end=?
+supported=0
+ac_online=0
+power_now=?
+energy_now=?
+energy_full=?
+
+for base in /sys/class/power_supply/*; do
+    [ -d "$base" ] || continue
+    type=$(cat "$base/type" 2>/dev/null || true)
+    case "$type" in
+        Battery)
+            battery_count=$((battery_count + 1))
+            if [ -z "$battery_name" ]; then
+                battery_name=${base##*/}
+                capacity=$(cat "$base/capacity" 2>/dev/null || printf '?')
+                battery_status=$(cat "$base/status" 2>/dev/null || printf 'Unknown')
+                power_now=$(cat "$base/power_now" 2>/dev/null || printf '?')
+                energy_now=$(cat "$base/energy_now" 2>/dev/null || printf '?')
+                energy_full=$(cat "$base/energy_full" 2>/dev/null || printf '?')
+
+                # Some drivers expose charge/current rather than energy/power.
+                # Convert those values to uWh/uW using the present voltage.
+                if { [ "$power_now" = "?" ] || [ "$energy_now" = "?" ] || [ "$energy_full" = "?" ]; } &&
+                   [ -r "$base/voltage_now" ]; then
+                    voltage_now=$(cat "$base/voltage_now" 2>/dev/null || printf '?')
+                    if [ "$voltage_now" != "?" ]; then
+                        if [ "$power_now" = "?" ] && [ -r "$base/current_now" ]; then
+                            current_now=$(cat "$base/current_now" 2>/dev/null || printf '?')
+                            [ "$current_now" = "?" ] || power_now=$((current_now * voltage_now / 1000000))
+                        fi
+                        if [ "$energy_now" = "?" ] && [ -r "$base/charge_now" ]; then
+                            charge_now=$(cat "$base/charge_now" 2>/dev/null || printf '?')
+                            [ "$charge_now" = "?" ] || energy_now=$((charge_now * voltage_now / 1000000))
+                        fi
+                        if [ "$energy_full" = "?" ] && [ -r "$base/charge_full" ]; then
+                            charge_full=$(cat "$base/charge_full" 2>/dev/null || printf '?')
+                            [ "$charge_full" = "?" ] || energy_full=$((charge_full * voltage_now / 1000000))
+                        fi
+                    fi
+                fi
+                if [ -r "$base/charge_control_start_threshold" ] &&
+                   [ -r "$base/charge_control_end_threshold" ]; then
+                    start=$(cat "$base/charge_control_start_threshold")
+                    end=$(cat "$base/charge_control_end_threshold")
+                    supported=1
+                fi
+            fi
+            ;;
+        Mains|USB|USB_C|USB_PD)
+            [ "$(cat "$base/online" 2>/dev/null || printf 0)" = 1 ] && ac_online=1
+            ;;
+    esac
+done
+
+printf 'STATUS|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\n' \
+    "$battery_name" "$capacity" "$battery_status" "$start" "$end" \
+    "$supported" "$ac_online" "$battery_count" "$power_now" "$energy_now" "$energy_full"
+
+power_profile=unknown
+if command -v busctl >/dev/null 2>&1; then
+    raw_power_profile=$(busctl get-property org.freedesktop.UPower.PowerProfiles \
+        /org/freedesktop/UPower/PowerProfiles \
+        org.freedesktop.UPower.PowerProfiles ActiveProfile 2>/dev/null || true)
+    power_profile=$(printf '%s\n' "$raw_power_profile" | sed -n 's/^s "\([^"]*\)"$/\1/p')
+    [ -n "$power_profile" ] || power_profile=unknown
+fi
+printf 'POWER_PROFILE|%s\n' "$power_profile"
+
+for connector in /sys/class/drm/card*-*; do
+    [ -r "$connector/status" ] || continue
+    full=${connector##*/}
+    name=${full#*-}
+    connection=$(cat "$connector/status" 2>/dev/null || printf unknown)
+    enabled=$(cat "$connector/enabled" 2>/dev/null || printf disabled)
+    case "$name" in
+        eDP-*|LVDS-*|DSI-*) kind=internal-hint ;;
+        *) kind=external-hint ;;
+    esac
+    edid=none
+    if [ -s "$connector/edid" ]; then
+        edid=$(od -An -tx1 -N16 "$connector/edid" 2>/dev/null | tr -d ' \n')
+        [ -n "$edid" ] || edid=unknown
+    fi
+    printf 'DISPLAY|%s|%s|%s|%s|%s\n' "$name" "$connection" "$enabled" "$kind" "$edid"
+done

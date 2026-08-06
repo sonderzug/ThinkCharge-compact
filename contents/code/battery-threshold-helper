@@ -1,0 +1,52 @@
+#!/bin/sh
+# This program is intentionally tiny: pkexec runs this helper, never the widget.
+set -eu
+
+die() {
+    printf 'ERROR|%s\n' "$1" >&2
+    exit 1
+}
+
+case "${1-}" in
+    set) ;;
+    *) die "Usage: battery-threshold-helper set BATTERY START END" ;;
+esac
+
+battery=${2-}
+start=${3-}
+end=${4-}
+
+case "$battery" in
+    *[!A-Za-z0-9_-]*|'') die "Invalid battery name" ;;
+esac
+case "$start:$end" in
+    *[!0-9:]*|:|*:) die "Thresholds must be integers" ;;
+esac
+
+[ "$start" -ge 0 ] 2>/dev/null || die "Start threshold is out of range"
+[ "$end" -le 100 ] 2>/dev/null || die "End threshold is out of range"
+[ "$start" -lt "$end" ] || die "Start threshold must be below end threshold"
+
+base="/sys/class/power_supply/$battery"
+start_file="$base/charge_control_start_threshold"
+end_file="$base/charge_control_end_threshold"
+[ -d "$base" ] || die "Battery disappeared"
+[ "$(cat "$base/type" 2>/dev/null || true)" = "Battery" ] || die "Not a battery device"
+[ -e "$start_file" ] && [ -e "$end_file" ] || die "Threshold controls are unavailable"
+
+old_start=$(cat "$start_file") || die "Cannot read start threshold"
+old_end=$(cat "$end_file") || die "Cannot read end threshold"
+
+# Keep the pair valid even on drivers which validate every individual write.
+if [ "$end" -le "$old_start" ]; then
+    printf '%s\n' "$start" > "$start_file" || die "Could not write start threshold"
+    printf '%s\n' "$end" > "$end_file" || die "Could not write end threshold"
+else
+    printf '%s\n' "$end" > "$end_file" || die "Could not write end threshold"
+    printf '%s\n' "$start" > "$start_file" || die "Could not write start threshold"
+fi
+
+actual_start=$(cat "$start_file")
+actual_end=$(cat "$end_file")
+[ "$actual_start" = "$start" ] && [ "$actual_end" = "$end" ] || die "Kernel did not retain requested thresholds"
+printf 'OK|%s|%s\n' "$actual_start" "$actual_end"
