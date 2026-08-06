@@ -61,7 +61,7 @@ already installed:
 
 ```sh
 kpackagetool6 --type Plasma/Applet --install \
-  org.kde.plasma.batterythresholds-2.8.10.plasmoid
+  org.kde.plasma.batterythresholds-2.8.11.plasmoid
 ```
 
 The same limitation applies when installing from KDE's **Get New Widgets**
@@ -79,6 +79,11 @@ Pull or extract the new source and run the same installer again:
 git pull
 ./install.sh
 ```
+
+The installer also enables `battery-charge-limits.service`. It stores the last
+normal charge limits in `/etc/battery-charge-limits.conf` and restores them at
+boot before the display manager starts. Temporary Full and Safe full actions
+are deliberately not persisted.
 
 The script detects an existing package and uses Plasma's upgrade operation.
 
@@ -126,6 +131,9 @@ Run the local checks:
 ```sh
 ./scripts/check.sh
 ```
+
+Besides syntax and QML validation, this runs behavior tests against a simulated
+sysfs tree and verifies rejection of unsafe helper inputs.
 
 Build the versioned `.plasmoid` and SHA-256 checksum in `dist/`:
 

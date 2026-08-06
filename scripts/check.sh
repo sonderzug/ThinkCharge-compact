@@ -6,7 +6,15 @@ cd "$project_dir"
 
 python3 -m json.tool metadata.json >/dev/null
 sh -n install.sh uninstall.sh contents/code/battery-threshold-helper \
-    contents/code/read-battery-thresholds scripts/build-release.sh
+    contents/code/read-battery-thresholds scripts/build-release.sh scripts/test.sh
+
+./scripts/test.sh
+
+grep -q '^Type=oneshot$' packaging/battery-charge-limits.service
+grep -q '^ExecStart=/usr/local/libexec/battery-threshold-helper restore$' \
+    packaging/battery-charge-limits.service
+grep -q '^After=multi-user.target$' packaging/battery-charge-limits.service
+grep -q '^Before=display-manager.service$' packaging/battery-charge-limits.service
 
 if command -v xmllint >/dev/null 2>&1; then
     xmllint --noout contents/config/main.xml contents/images/*.svg

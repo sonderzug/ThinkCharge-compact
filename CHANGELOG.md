@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here.
 
+## 2.8.11 — 2026-08-06
+
+- Persist normal charge limits in a root-owned configuration and restore them
+  during boot with a systemd oneshot service, before the display manager starts.
+- Keep temporary Full and Safe full overrides out of the persisted boot state.
+- Use the normal Plasma icon color for the current battery level while
+  discharging; reserve green for active charging.
+- Stop reading and converting DRM EDID bytes during the regular status poll;
+  connector names provide all information required for docking detection.
+- Add behavior tests for status parsing against a simulated sysfs tree and for
+  privileged-helper input validation.
+- Narrow the popup and align the temporary charge and power-profile controls
+  with the other labeled settings.
+
 ## 2.8.10 — 2026-08-06
 
 - Rename the docking toggle to clarify that it enables or disables automatic

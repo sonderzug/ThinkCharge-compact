@@ -4,7 +4,7 @@ Item {
     id: root
     property color glyphColor: "white"
     property color targetColor: "#3daee9"
-    property color actualColor: "#2ecc71"
+    property color actualColor: charging ? "#2ecc71" : glyphColor
     property real targetFillLevel: 0.8
     property real actualFillLevel: 0.6
     property bool charging: false

@@ -6,7 +6,7 @@
 3. Run `./scripts/build-release.sh`.
 4. Install the generated `.plasmoid` in a clean Plasma user session and verify
    profile editing, temporary overrides, AC changes, HDMI changes, and docking.
-5. Commit the release, create an annotated tag such as `v2.8.10`, and push it.
+5. Commit the release, create an annotated tag such as `v2.8.11`, and push it.
 6. Create the Git hosting release from that tag and attach the `.plasmoid` and
    `.sha256` files from `dist/`.
 7. For the store.kde.org listing, state prominently that **Get New Widgets only
@@ -21,17 +21,21 @@ KDE Plasma 6 and a Linux battery driver exposing
 required. Installation through Get New Widgets provides status and
 power-profile features only. To change charge limits, download the source
 package and run `./install.sh` as your regular desktop user; it installs a
-narrowly scoped root helper and PolicyKit rule and will ask for `sudo` once.
+narrowly scoped root helper, PolicyKit rule, and boot restoration service and
+will ask for `sudo` once.
 
 ## Suggested release title
 
-Battery Charge Limits 2.8.10
+Battery Charge Limits 2.8.11
 
 ## Suggested release notes
 
-Battery Charge Limits 2.8.10 clarifies that the docking toggle controls automatic
-Normal/Docked mode switching. The release also includes the live charging
-statistics, layered battery
-indicator, automatic KDE power-profile switching, per-profile configuration,
-temporary overrides, and a reorganized Plasma 6 popup. See `CHANGELOG.md` for
-the complete list.
+Battery Charge Limits 2.8.11 adds reliable boot-time restoration of normal
+charge thresholds through a systemd oneshot service. Temporary Full and Safe
+full actions remain session-only, and the panel battery indicator now uses the
+normal Plasma icon color while discharging, reserving green for active charging.
+The regular status poll no longer processes DRM EDID data, and the validation
+suite now includes behavior tests using simulated battery and display devices.
+The popup is narrower and the temporary override controls use the same aligned
+label-and-control layout as the remaining settings.
+See `CHANGELOG.md` for the complete list.

@@ -1,0 +1,11 @@
+[Unit]
+Description=Restore battery charge limits
+After=multi-user.target
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/battery-threshold-helper restore
+
+[Install]
+WantedBy=graphical.target

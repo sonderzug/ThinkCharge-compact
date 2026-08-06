@@ -4,8 +4,10 @@ set -eu
 project_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 helper_source="$project_dir/contents/code/battery-threshold-helper"
 rule_template="$project_dir/packaging/49-battery-thresholds.rules.in"
+service_source="$project_dir/packaging/battery-charge-limits.service"
 helper_target=/usr/local/libexec/battery-threshold-helper
 rule_target=/etc/polkit-1/rules.d/49-battery-thresholds.rules
+service_target=/etc/systemd/system/battery-charge-limits.service
 package_id=org.kde.plasma.batterythresholds
 install_user=$(id -un)
 
@@ -16,7 +18,7 @@ case "$install_user" in
         ;;
 esac
 
-for program in kpackagetool6 sudo sed install mktemp; do
+for program in kpackagetool6 sudo sed install mktemp systemctl; do
     command -v "$program" >/dev/null 2>&1 || {
         printf 'Missing required command: %s\n' "$program" >&2
         exit 1
@@ -30,6 +32,9 @@ sed "s/@AUTHORIZED_USER@/$install_user/g" "$rule_template" > "$rule_tmp"
 printf 'Installing privileged threshold helper for user %s…\n' "$install_user"
 sudo install -D -m 0755 "$helper_source" "$helper_target"
 sudo install -D -m 0644 "$rule_tmp" "$rule_target"
+sudo install -D -m 0644 "$service_source" "$service_target"
+sudo systemctl daemon-reload
+sudo systemctl enable --now battery-charge-limits.service
 
 if kpackagetool6 --type Plasma/Applet --show "$package_id" >/dev/null 2>&1; then
     printf 'Upgrading Plasma widget…\n'

@@ -29,6 +29,7 @@ PlasmoidItem {
     property bool dockingCandidate: false
     property string temporaryMode: "" // FULL or SAFE_FULL, never persisted
     property bool applying: false
+    property bool persistenceConfirmed: false
     property bool editing: false
     property string automaticPowerState: ""
     property string powerProfileOverride: "" // Empty means profile-controlled automatic mode.
@@ -283,7 +284,7 @@ PlasmoidItem {
                 helperInstalled = f[1] === "1"
                 helperChecked = true
             } else if (f[0] === "DISPLAY") {
-                foundDisplays.push({ name: f[1], connection: f[2], enabled: f[3], kind: f[4], edid: f[5] })
+                foundDisplays.push({ name: f[1], connection: f[2], enabled: f[3], kind: f[4] })
             } else if (f[0] === "POWER_PROFILE") {
                 currentPowerProfile = f[1] || "unknown"
             }
@@ -299,9 +300,12 @@ PlasmoidItem {
     }
     function reconcile() {
         if (!supported || !helperInstalled || applying || editing) return
-        if (currentStart === desiredStart && currentEnd === desiredEnd) return
+        if (currentStart === desiredStart && currentEnd === desiredEnd
+                && (temporaryMode.length > 0 || persistenceConfirmed)) return
         applying = true
-        var cmd = "pkexec " + shellQuote(helperPath) + " set " + shellQuote(batteryName)
+        // Temporary full-charge modes must not become the next boot's limits.
+        var action = temporaryMode.length > 0 ? "apply" : "set"
+        var cmd = "pkexec " + shellQuote(helperPath) + " " + action + " " + shellQuote(batteryName)
             + " " + desiredStart + " " + desiredEnd
         command.connectSource(cmd)
     }
@@ -377,7 +381,10 @@ PlasmoidItem {
                 return
             }
             root.applying = false
-            if (data["exit code"] === 0 && output.indexOf("OK|") >= 0) root.refresh()
+            if (data["exit code"] === 0 && output.indexOf("OK|") >= 0) {
+                if (source.indexOf(" set ") >= 0) root.persistenceConfirmed = true
+                root.refresh()
+            }
             else {
                 var error = (data["stderr"] || "").trim().split("\n").pop()
                 root.statusMessage = error ? error.replace(/^ERROR\|/, "") : i18n("Permission denied or helper failed.")

@@ -2,6 +2,8 @@
 set -eu
 
 # One snapshot for the unprivileged widget: battery, AC and DRM outputs.
+power_supply_root=${BATTERY_THRESHOLDS_POWER_SUPPLY_ROOT:-/sys/class/power_supply}
+drm_root=${BATTERY_THRESHOLDS_DRM_ROOT:-/sys/class/drm}
 if [ -x /usr/local/libexec/battery-threshold-helper ]; then
     printf 'HELPER|1\n'
 else
@@ -20,7 +22,7 @@ power_now=?
 energy_now=?
 energy_full=?
 
-for base in /sys/class/power_supply/*; do
+for base in "$power_supply_root"/*; do
     [ -d "$base" ] || continue
     type=$(cat "$base/type" 2>/dev/null || true)
     case "$type" in
@@ -82,7 +84,7 @@ if command -v busctl >/dev/null 2>&1; then
 fi
 printf 'POWER_PROFILE|%s\n' "$power_profile"
 
-for connector in /sys/class/drm/card*-*; do
+for connector in "$drm_root"/card*-*; do
     [ -r "$connector/status" ] || continue
     full=${connector##*/}
     name=${full#*-}
@@ -92,10 +94,7 @@ for connector in /sys/class/drm/card*-*; do
         eDP-*|LVDS-*|DSI-*) kind=internal-hint ;;
         *) kind=external-hint ;;
     esac
-    edid=none
-    if [ -s "$connector/edid" ]; then
-        edid=$(od -An -tx1 -N16 "$connector/edid" 2>/dev/null | tr -d ' \n')
-        [ -n "$edid" ] || edid=unknown
-    fi
-    printf 'DISPLAY|%s|%s|%s|%s|%s\n' "$name" "$connection" "$enabled" "$kind" "$edid"
+    # Connector names are stable for the running system and are all the UI
+    # needs. Avoid decoding EDID data in every polling cycle.
+    printf 'DISPLAY|%s|%s|%s|%s\n' "$name" "$connection" "$enabled" "$kind"
 done

@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
 Item {
-    implicitWidth: Kirigami.Units.gridUnit * 32
+    implicitWidth: Kirigami.Units.gridUnit * 28
     implicitHeight: content.implicitHeight + Kirigami.Units.largeSpacing * 2
     Layout.minimumWidth: implicitWidth
     Layout.preferredWidth: implicitWidth
@@ -98,32 +98,33 @@ Item {
         }
         Kirigami.Separator { Layout.fillWidth: true }
         Controls.Label { text: i18n("Temporary overrides"); font.bold: true }
-        RowLayout {
+        GridLayout {
             Layout.fillWidth: true
-            Controls.Button {
-                text: i18n("Full")
-                enabled: root.helperInstalled
-                checkable: true
-                checked: root.temporaryMode === "FULL"
-                Layout.preferredHeight: Kirigami.Units.gridUnit * 1.6
-                leftPadding: Kirigami.Units.smallSpacing
-                rightPadding: Kirigami.Units.smallSpacing
-                onClicked: root.toggleTemporary("FULL")
+            columns: 2
+            Controls.Label { text: i18n("Charge mode") }
+            RowLayout {
+                Layout.fillWidth: true
+                Controls.Button {
+                    text: i18n("Full")
+                    enabled: root.helperInstalled
+                    checkable: true
+                    checked: root.temporaryMode === "FULL"
+                    Layout.fillWidth: true
+                    onClicked: root.toggleTemporary("FULL")
+                }
+                Controls.Button {
+                    text: i18n("Safe full")
+                    enabled: root.helperInstalled
+                    checkable: true
+                    checked: root.temporaryMode === "SAFE_FULL"
+                    Layout.fillWidth: true
+                    onClicked: root.toggleTemporary("SAFE_FULL")
+                }
             }
-            Controls.Button {
-                text: i18n("Safe full")
-                enabled: root.helperInstalled
-                checkable: true
-                checked: root.temporaryMode === "SAFE_FULL"
-                Layout.preferredHeight: Kirigami.Units.gridUnit * 1.6
-                leftPadding: Kirigami.Units.smallSpacing
-                rightPadding: Kirigami.Units.smallSpacing
-                onClicked: root.toggleTemporary("SAFE_FULL")
-            }
+            Controls.Label { text: i18n("Power profile") }
             NoWheelComboBox {
                 id: powerOverride
                 Layout.fillWidth: true
-                Layout.preferredHeight: Kirigami.Units.gridUnit * 1.6
                 model: [i18n("Automatic"), i18n("Power Save"), i18n("Balanced"), i18n("Performance")]
                 readonly property var modeIds: ["", "power-saver", "balanced", "performance"]
                 currentIndex: Math.max(0, modeIds.indexOf(root.powerProfileOverride))
@@ -155,7 +156,7 @@ Item {
         }
         Kirigami.Separator { Layout.fillWidth: true }
         Controls.Label { text: i18n("Status"); font.bold: true }
-        Controls.Label { Layout.fillWidth: true; text: i18n("Charge: %1% / %2%   Power: %3   Remaining: %4\nRange: %5–%2%   Profile: %6   Mode: %7   Power mode: %8", root.capacity, root.currentEnd, root.formatPower(), root.formatDuration(root.hoursToTarget), root.currentStart, root.profileById(root.selectedProfileId).name, root.effectiveMode, root.powerProfileName(root.currentPowerProfile)); color: Kirigami.Theme.disabledTextColor }
+        Controls.Label { Layout.fillWidth: true; text: i18n("Charge: %1% / %2%   Power: %3   Remaining: %4\nRange: %5–%2%   Profile: %6   Mode: %7   Power mode: %8", root.capacity, root.currentEnd, root.formatPower(), root.formatDuration(root.hoursToTarget), root.currentStart, root.profileById(root.selectedProfileId).name, root.effectiveMode, root.powerProfileName(root.currentPowerProfile)); color: Kirigami.Theme.disabledTextColor; wrapMode: Text.Wrap }
     }
     Controls.Dialog { id: deleteDialog; modal: true; anchors.centerIn: parent; title: i18n("Delete profile?"); standardButtons: Controls.Dialog.Ok | Controls.Dialog.Cancel; onAccepted: root.deleteSelectedProfile() }
 }
