@@ -6,7 +6,7 @@
 3. Run `./scripts/build-release.sh`.
 4. Install the generated `.plasmoid` in a clean Plasma user session and verify
    profile editing, temporary overrides, AC changes, HDMI changes, and docking.
-5. Commit the release, create an annotated tag such as `v2.8.11`, and push it.
+5. Commit the release, create an annotated tag such as `v2.8.12`, and push it.
 6. Create the Git hosting release from that tag and attach the `.plasmoid` and
    `.sha256` files from `dist/`.
 7. For the store.kde.org listing, state prominently that **Get New Widgets only
@@ -26,16 +26,12 @@ will ask for `sudo` once.
 
 ## Suggested release title
 
-Battery Charge Limits 2.8.11
+Battery Charge Limits 2.8.12
 
 ## Suggested release notes
 
-Battery Charge Limits 2.8.11 adds reliable boot-time restoration of normal
-charge thresholds through a systemd oneshot service. Temporary Full and Safe
-full actions remain session-only, and the panel battery indicator now uses the
-normal Plasma icon color while discharging, reserving green for active charging.
-The regular status poll no longer processes DRM EDID data, and the validation
-suite now includes behavior tests using simulated battery and display devices.
-The popup is narrower and the temporary override controls use the same aligned
-label-and-control layout as the remaining settings.
+Battery Charge Limits 2.8.12 runs automatic docking detection only when
+Automatic mode switching is enabled. Switching it off immediately restores the
+saved normal profile, and the setting persists across Plasma restarts. HDMI
+power-profile selection remains independent from automatic docking.
 See `CHANGELOG.md` for the complete list.

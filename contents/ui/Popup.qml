@@ -138,7 +138,7 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             Controls.Label { text: i18n("Automatic mode switching"); Layout.fillWidth: true }
-            Controls.Switch { checked: Plasmoid.configuration.dockingEnabled; onToggled: { Plasmoid.configuration.dockingEnabled = checked; root.determineDisplays() } }
+            Controls.Switch { checked: Plasmoid.configuration.dockingEnabled; onToggled: root.setDockingEnabled(checked) }
         }
         RowLayout {
             Layout.fillWidth: true; enabled: Plasmoid.configuration.dockingEnabled

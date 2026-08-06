@@ -234,6 +234,16 @@ PlasmoidItem {
             + "ActiveProfile s " + shellQuote(wanted))
     }
     function determineDisplays() {
+        hdmiDisplayActive = displays.some(function(d) {
+            return d.name.indexOf("HDMI-") === 0 && d.connection === "connected" && d.enabled === "enabled"
+        })
+        // HDMI power-profile selection is independent from automatic docking.
+        // Do not evaluate or debounce a docking state while the option is off.
+        if (!Plasmoid.configuration.dockingEnabled) {
+            externalDisplayActive = false
+            applyAutomaticPowerProfile()
+            return
+        }
         var hints = displays.filter(function(d) { return d.kind === "internal-hint" })
         autoInternalDisplay = hints.length === 1 ? hints[0].name : ""
         var internalId = Plasmoid.configuration.internalDisplayId === "auto"
@@ -241,18 +251,32 @@ PlasmoidItem {
         externalDisplayActive = displays.some(function(d) {
             return d.name !== internalId && d.connection === "connected" && d.enabled === "enabled"
         })
-        hdmiDisplayActive = displays.some(function(d) {
-            return d.name.indexOf("HDMI-") === 0 && d.connection === "connected" && d.enabled === "enabled"
-        })
-        var candidate = Plasmoid.configuration.dockingEnabled && acOnline && externalDisplayActive
-            && batteryStatus !== "Discharging"
+        var candidate = acOnline && externalDisplayActive && batteryStatus !== "Discharging"
         if (candidate !== dockingCandidate) {
             dockingCandidate = candidate
             dockingDebounce.restart()
         }
         applyAutomaticPowerProfile()
     }
+    function setDockingEnabled(enabled) {
+        Plasmoid.configuration.dockingEnabled = enabled
+        dockingDebounce.stop()
+        dockingCandidate = false
+        if (!enabled) {
+            if (dockingDetected) {
+                dockingDetected = false
+                selectProfile(Plasmoid.configuration.normalProfileId, false)
+                reconcile()
+                automaticPowerState = ""
+                applyAutomaticPowerProfile()
+            }
+            return
+        }
+        determineDisplays()
+    }
     function commitDockingState() {
+        if (!Plasmoid.configuration.dockingEnabled)
+            return
         if (dockingCandidate === dockingDetected)
             return
         if (dockingCandidate) {

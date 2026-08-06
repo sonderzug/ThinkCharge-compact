@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here.
 
+## 2.8.12 — 2026-08-06
+
+- Run automatic docking detection only while Automatic mode switching is
+  enabled; keep HDMI-based power-profile detection independent.
+- Immediately leave Docked mode and restore the saved normal profile when
+  automatic docking is disabled.
+- Persist the automatic-docking switch through the existing Plasma
+  configuration across widget and Plasma restarts.
+
 ## 2.8.11 — 2026-08-06
 
 - Persist normal charge limits in a root-owned configuration and restore them

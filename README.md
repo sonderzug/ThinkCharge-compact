@@ -61,7 +61,7 @@ already installed:
 
 ```sh
 kpackagetool6 --type Plasma/Applet --install \
-  org.kde.plasma.batterythresholds-2.8.11.plasmoid
+  org.kde.plasma.batterythresholds-2.8.12.plasmoid
 ```
 
 The same limitation applies when installing from KDE's **Get New Widgets**
