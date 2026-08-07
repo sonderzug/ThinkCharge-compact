@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## 2.8.13 — 2026-08-07
+
+- Prevent a Fedora boot deadlock by no longer ordering the charge-limit restore
+  before the display manager, and bound both service startup and shutdown to
+  ten seconds.
+
 ## 2.8.12 — 2026-08-06
 
 - Run automatic docking detection only while Automatic mode switching is

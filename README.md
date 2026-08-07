@@ -1,5 +1,14 @@
 # Battery Charge Limits for Plasma 6
 
+> **Critical boot fix for versions 2.8.11 and 2.8.12:** The systemd service in
+> these versions can deadlock Fedora's graphical boot before the login screen.
+> Version 2.8.13 removes the display-manager ordering that causes the deadlock
+> and adds 10-second service timeouts. Users who ran `./install.sh` with an
+> affected version should update immediately. If necessary, disable the old
+> service with `sudo systemctl disable --now battery-charge-limits.service`.
+> See the [complete recovery and upgrade instructions](#required-boot-fix-for-versions-2811-and-2812),
+> including how to recover through GRUB when graphical boot no longer works.
+
 A Plasma 6 panel widget for controlling the generic Linux battery charge
 thresholds while showing live battery and power-profile information.
 
@@ -61,7 +70,7 @@ already installed:
 
 ```sh
 kpackagetool6 --type Plasma/Applet --install \
-  org.kde.plasma.batterythresholds-2.8.12.plasmoid
+  org.kde.plasma.batterythresholds-2.8.13.plasmoid
 ```
 
 The same limitation applies when installing from KDE's **Get New Widgets**
@@ -81,11 +90,87 @@ git pull
 ```
 
 The installer also enables `battery-charge-limits.service`. It stores the last
-normal charge limits in `/etc/battery-charge-limits.conf` and restores them at
-boot before the display manager starts. Temporary Full and Safe full actions
-are deliberately not persisted.
+normal charge limits in `/etc/battery-charge-limits.conf` and restores them
+during graphical boot without delaying the display manager. The restore has a
+short timeout so battery-driver problems cannot hold up boot indefinitely.
+Temporary Full and Safe full actions are deliberately not persisted.
 
 The script detects an existing package and uses Plasma's upgrade operation.
+
+### Required boot fix for versions 2.8.11 and 2.8.12
+
+The service shipped with versions 2.8.11 and 2.8.12 can deadlock Fedora's
+graphical boot before the login screen appears. This affects only users who ran
+`./install.sh`; installing the standalone `.plasmoid` does not install the
+system service.
+
+I sincerely apologize to anyone whose system was affected by this bug. Shipping
+a release that could block graphical boot was a serious mistake, and versions
+2.8.11 and 2.8.12 did not meet the quality standard that users should be able to
+expect from this project.
+
+If the desktop still starts, update the source checkout and reinstall:
+
+```sh
+cd /path/to/ThinkCharge
+git pull --ff-only
+./install.sh
+```
+
+If graphical boot hangs, boot once into the text-only target:
+
+1. Select the normal boot entry in GRUB and press `e`.
+2. Append `systemd.unit=multi-user.target` to the line beginning with `linux`
+   or `linuxefi`.
+3. Boot the edited entry with `Ctrl`+`X` or `F10` and log in at the text
+   console.
+4. Disable the old service before doing anything else:
+
+   ```sh
+   sudo systemctl disable --now battery-charge-limits.service
+   ```
+
+5. Update and reinstall from the existing checkout as your regular user:
+
+   ```sh
+   cd /path/to/ThinkCharge
+   git pull --ff-only
+   ./install.sh
+   ```
+
+Do not run the complete installer with `sudo`. If updated source is not yet
+available, leave the old service disabled and return to graphical boot with:
+
+```sh
+sudo reboot
+```
+
+After downloading or extracting the updated source, run `./install.sh` to
+install and re-enable the corrected service. Verify the installed unit with:
+
+```sh
+systemctl cat battery-charge-limits.service
+systemctl show battery-charge-limits.service \
+  --property=Before \
+  --property=TimeoutStartUSec \
+  --property=TimeoutStopUSec
+```
+
+`Before=` must not contain `display-manager.service`; both timeouts should be
+10 seconds. Adding only a timeout to the old unit is not sufficient because the
+deadlock prevents the helper process from starting in the first place.
+
+After successful verification, reboot normally without the temporary kernel
+parameter:
+
+```sh
+sudo systemctl reboot
+```
+
+If graphical boot still fails, use the text-only recovery procedure again,
+disable the service again, and reboot. The widget remains usable, but saved
+limits will not be restored automatically during boot while the service is
+disabled.
 
 ## Uninstall
 
@@ -143,6 +228,16 @@ Build the versioned `.plasmoid` and SHA-256 checksum in `dist/`:
 
 See [CHANGELOG.md](CHANGELOG.md) for release history and [RELEASE.md](RELEASE.md)
 for the maintainer checklist.
+
+## Hardware and warranty disclaimer
+
+I can test this project only on my own device. Battery firmware, kernel drivers,
+sysfs interfaces, display managers, and distribution boot configurations vary
+between systems. I therefore cannot guarantee that charge-limit changes, boot
+restoration, or every other feature will work correctly on a particular
+machine. Use the software at your own risk and keep a working recovery method,
+such as the text-only boot procedure above, available. The software is provided
+without warranty under the terms of its license.
 
 ## License
 

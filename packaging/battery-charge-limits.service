@@ -1,11 +1,15 @@
 [Unit]
 Description=Restore battery charge limits
 After=multi-user.target
-Before=display-manager.service
+
+# Keep this independent of the display manager. On Fedora, GDM releases
+# plymouth-quit-wait.service, which is ordered before multi-user.target.
 
 [Service]
 Type=oneshot
 ExecStart=/usr/local/libexec/battery-threshold-helper restore
+TimeoutStartSec=10s
+TimeoutStopSec=10s
 
 [Install]
 WantedBy=graphical.target
