@@ -12,6 +12,7 @@ die() {
 action=${1-}
 case "$action" in
     set|apply)
+        [ "$#" -eq 4 ] || die "Usage: battery-threshold-helper {set|apply} BATTERY START END"
         battery=${2-}
         start=${3-}
         end=${4-}

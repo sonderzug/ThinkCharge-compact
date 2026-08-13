@@ -17,7 +17,7 @@ version=$(sed -n 's/.*"Version": "\([^"]*\)".*/\1/p' metadata.json)
 }
 
 mkdir -p dist
-archive="dist/org.kde.plasma.batterythresholds-$version.plasmoid"
+archive="dist/ThinkCharge-$version.plasmoid"
 rm -f -- "$archive" "$archive.sha256"
 zip -X -q -r "$archive" metadata.json contents
 sha256sum "$archive" > "$archive.sha256"

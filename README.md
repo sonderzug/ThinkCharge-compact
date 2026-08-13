@@ -1,4 +1,8 @@
-# Battery Charge Limits for Plasma 6
+# ThinkCharge
+
+<p align="center">
+  <img src="docs/thinkcharge_logo_thinkpad.svg" alt="ThinkCharge logo" width="180">
+</p>
 
 > **Critical boot fix for versions 2.8.11 and 2.8.12:** The systemd service in
 > these versions can deadlock Fedora's graphical boot before the login screen.
@@ -27,7 +31,15 @@ thresholds while showing live battery and power-profile information.
 - Automatic KDE power profiles for battery, AC, and HDMI operation
 - Per-charge-profile Power Save, Balanced, and Performance rules
 - Temporary manual power-profile override
+- Per-charge-profile screen refresh-rate switching for battery and AC power,
+  plus a temporary "Max" override
+- Per-charge-profile screen-off and sleep idle timeouts
+- Keep-awake toggle that blocks sleep and screen locking on demand
+- Desktop notifications for automatic and manual profile, power-profile, and
+  refresh-rate changes
 - Optional automatic switching between Normal and Docked mode
+- Charge thresholds reasserted automatically around suspend/resume, not only
+  at boot
 
 ## Requirements
 
@@ -38,6 +50,8 @@ thresholds while showing live battery and power-profile information.
 - `kpackagetool6`, `pkexec`, PolicyKit, `sudo`, and `busctl`
 - A service implementing `org.freedesktop.UPower.PowerProfiles` for automatic
   Power Save/Balanced/Performance switching
+- `kscreen-doctor` (from KDE's kscreen, normally already present on a Plasma
+  desktop) for automatic screen refresh-rate switching
 
 The widget remains useful as a status display when charge thresholds or power
 profiles are unavailable, but the corresponding controls cannot work without
@@ -55,7 +69,7 @@ cd ThinkCharge
 
 The script asks for `sudo` once to install the narrowly scoped threshold helper
 and a PolicyKit rule. It then installs the widget only for the current user.
-Open Plasma's widget browser, search for **Battery Charge Limits**, and add it to
+Open Plasma's widget browser, search for **ThinkCharge**, and add it to
 the panel. If an older loaded instance does not refresh, log out and back in.
 
 Do not run the entire installer with `sudo`; doing so would install the Plasma
@@ -70,7 +84,7 @@ already installed:
 
 ```sh
 kpackagetool6 --type Plasma/Applet --install \
-  org.kde.plasma.batterythresholds-2.8.13.plasmoid
+  ThinkCharge-2.8.14.plasmoid
 ```
 
 The same limitation applies when installing from KDE's **Get New Widgets**
@@ -93,7 +107,10 @@ The installer also enables `battery-charge-limits.service`. It stores the last
 normal charge limits in `/etc/battery-charge-limits.conf` and restores them
 during graphical boot without delaying the display manager. The restore has a
 short timeout so battery-driver problems cannot hold up boot indefinitely.
-Temporary Full and Safe full actions are deliberately not persisted.
+Temporary Full and Safe full actions are deliberately not persisted. The same
+limits are also reasserted by a `systemd-sleep` hook around every
+suspend/hibernate transition, independent of whether a Plasma session is
+running at the time.
 
 The script detects an existing package and uses Plasma's upgrade operation.
 
@@ -200,6 +217,16 @@ The **Automatic mode switching** toggle enables or disables automatic selection
 of the Docked profile. When enabled, AC power plus an active external display
 selects Docked mode after a short debounce; disconnecting either returns to the
 saved Normal profile. The toggle does not force Docked mode by itself.
+
+Automatic screen refresh-rate switching works the same way as the automatic
+power profile: each profile can set a separate rate for battery and AC power,
+applied through `kscreen-doctor` on the same state changes that drive the
+power profile. A temporary "Max" override forces the highest available rate
+until turned off. Background changes to the power profile or refresh rate,
+manual profile switches, saves, and docking transitions surface as a desktop
+notification; several changes landing together (for example both the power
+profile and the refresh rate after one AC event) are combined into one
+notification instead of one per change.
 
 ## Security
 

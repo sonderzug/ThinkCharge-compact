@@ -1,0 +1,14 @@
+#!/bin/sh
+# Installed to /usr/lib/systemd/system-sleep/, invoked by systemd-logind as
+# root with $1=pre|post around every suspend/hibernate transition. Reasserts
+# the last persisted charge thresholds independently of whether a Plasma
+# session/widget is running.
+set -eu
+
+case "${1-}" in
+    pre|post) ;;
+    *) exit 0 ;;
+esac
+
+[ -x /usr/local/libexec/battery-threshold-helper ] || exit 0
+exec /usr/local/libexec/battery-threshold-helper restore

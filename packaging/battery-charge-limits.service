@@ -1,5 +1,5 @@
 [Unit]
-Description=Restore battery charge limits
+Description=Restore ThinkCharge battery limits
 After=multi-user.target
 
 # Keep this independent of the display manager. On Fedora, GDM releases

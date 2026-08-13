@@ -28,5 +28,14 @@
         <entry name="internalDisplayId" type="String">
             <default>auto</default>
         </entry>
+        <entry name="keepAwake" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="keepAwakeSleepCookie" type="Int">
+            <default>-1</default>
+        </entry>
+        <entry name="keepAwakeScreenCookie" type="Int">
+            <default>-1</default>
+        </entry>
     </group>
 </kcfg>

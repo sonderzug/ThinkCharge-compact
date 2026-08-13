@@ -6,7 +6,7 @@
 3. Run `./scripts/build-release.sh`.
 4. Install the generated `.plasmoid` in a clean Plasma user session and verify
    profile editing, temporary overrides, AC changes, HDMI changes, and docking.
-5. Commit the release, create an annotated tag such as `v2.8.13`, and push it.
+5. Commit the release, create an annotated tag such as `v2.8.14`, and push it.
 6. Create the Git hosting release from that tag and attach the `.plasmoid` and
    `.sha256` files from `dist/`.
 7. For the store.kde.org listing, state prominently that **Get New Widgets only
@@ -26,15 +26,15 @@ will ask for `sudo` once.
 
 ## Suggested release title
 
-Battery Charge Limits 2.8.13
+ThinkCharge 2.8.14
 
 ## Suggested release notes
 
-Battery Charge Limits 2.8.13 fixes a boot-critical Fedora deadlock introduced
-with the charge-limit restoration service in versions 2.8.11 and 2.8.12. The
-service no longer blocks the display manager, and both its startup and shutdown
-are limited to ten seconds. Users who installed either affected version through
-`./install.sh` should update immediately. Recovery instructions are included in
-the README. I sincerely apologize to everyone affected; releasing a service
-capable of blocking graphical boot was a serious mistake.
+ThinkCharge 2.8.14 renames the project to ThinkCharge and adds automatic
+screen refresh-rate switching per charge profile (battery/AC, plus a
+temporary "Max" override), desktop notifications for automatic and manual
+changes, per-profile idle timeouts, a Keep awake toggle, and suspend/hibernate
+charge-threshold reassertion. It also fixes a bug where automatic refresh-rate
+switching could get stuck indefinitely, and a `ReferenceError` that broke the
+Docking section and Keep awake switch in the popup.
 See `CHANGELOG.md` for the complete list.

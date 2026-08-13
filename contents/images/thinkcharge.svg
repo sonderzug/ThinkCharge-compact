@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="body" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2b2b2b"/>
+      <stop offset="100%" stop-color="#141414"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background squircle -->
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="#0a0a0a"/>
+
+  <!-- laptop screen -->
+  <rect x="126" y="118" width="260" height="180" rx="14"
+        fill="url(#body)" stroke="#3a3a3a" stroke-width="4"/>
+  <!-- screen bezel inset -->
+  <rect x="144" y="136" width="224" height="144" rx="4" fill="#000000"/>
+
+  <!-- charge glyph on screen -->
+  <path d="M 266 158 L 216 218 L 250 218 L 234 260 L 284 200 L 250 200 Z"
+        fill="#e2231a"/>
+
+  <!-- laptop base -->
+  <path d="M 96 298 L 416 298 L 400 336 Q 397 344 388 344 L 124 344 Q 115 344 112 336 Z"
+        fill="url(#body)" stroke="#3a3a3a" stroke-width="4"/>
+
+  <!-- trackpoint red dot -->
+  <circle cx="256" cy="321" r="9" fill="#e2231a"/>
+</svg>

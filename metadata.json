@@ -3,16 +3,16 @@
     "KPlugin": {
         "Authors": [
             {
-                "Name": "Conserve Mode KDE contributors"
+                "Name": "ThinkCharge contributors"
             }
         ],
         "Category": "System Information",
         "Description": "Control generic Linux battery charge thresholds",
-        "Icon": "battery",
+        "Icon": "/images/thinkcharge.svg",
         "Id": "org.kde.plasma.batterythresholds",
         "License": "GPL-3.0-or-later",
-        "Name": "Battery Charge Limits",
-        "Version": "2.8.13",
+        "Name": "ThinkCharge",
+        "Version": "2.8.14",
         "Website": "https://github.com/GregorBoxer-sudo/ThinkCharge"
     },
     "X-Plasma-API-Minimum-Version": "6.0"

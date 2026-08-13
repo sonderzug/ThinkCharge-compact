@@ -2,6 +2,37 @@
 
 All notable changes to this project are documented here.
 
+## Unreleased
+
+## 2.8.14 — 2026-08-13
+
+- Rename the project to ThinkCharge and use its bundled logo consistently in
+  Plasma, the panel, installation messages, release assets, and documentation.
+- Add per-charge-profile automatic screen refresh-rate switching for battery
+  and AC power, applied through `kscreen-doctor`, plus a temporary "Max
+  refresh rate" override.
+- Add desktop notifications for automatic power-profile and refresh-rate
+  changes, manual profile switches, saves, docking transitions, temporary
+  charge overrides, the power-profile override, and Keep awake; combine
+  notifications that land together into a single one instead of spamming.
+- Add per-charge-profile screen-off and sleep idle timeouts.
+- Add a Keep awake toggle that blocks sleep and screen locking on demand.
+- Reassert the last persisted charge thresholds around every suspend/hibernate
+  transition via a `systemd-sleep` hook, independent of whether a Plasma
+  session is running.
+- Group the power-profile, idle-timeout, refresh-rate, and docking detail
+  controls in the popup behind collapsible sections to reduce visual clutter.
+- Fix a `ReferenceError` in the popup that broke the Docking section and the
+  Keep awake switch by adding the missing `org.kde.plasma.plasmoid` import.
+- Fix automatic refresh-rate switching getting stuck indefinitely: apply the
+  change optimistically instead of waiting for `kscreen-doctor`'s completion
+  signal, which the executable data engine does not reliably deliver for this
+  command.
+- Stop double-sampling AC/battery state right after a power-profile change,
+  which could apply two different refresh rates in quick succession.
+- Reject `battery-threshold-helper set`/`apply` invocations with the wrong
+  number of arguments instead of reading past the end of the argument list.
+
 ## 2.8.13 — 2026-08-07
 
 - Prevent a Fedora boot deadlock by no longer ordering the charge-limit restore

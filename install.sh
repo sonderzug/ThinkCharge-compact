@@ -3,9 +3,11 @@ set -eu
 
 project_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 helper_source="$project_dir/contents/code/battery-threshold-helper"
+sleep_hook_source="$project_dir/contents/code/battery-thresholds-sleep"
 rule_template="$project_dir/packaging/49-battery-thresholds.rules.in"
 service_source="$project_dir/packaging/battery-charge-limits.service"
 helper_target=/usr/local/libexec/battery-threshold-helper
+sleep_hook_target=/usr/lib/systemd/system-sleep/battery-thresholds
 rule_target=/etc/polkit-1/rules.d/49-battery-thresholds.rules
 service_target=/etc/systemd/system/battery-charge-limits.service
 package_id=org.kde.plasma.batterythresholds
@@ -31,6 +33,7 @@ sed "s/@AUTHORIZED_USER@/$install_user/g" "$rule_template" > "$rule_tmp"
 
 printf 'Installing privileged threshold helper for user %s…\n' "$install_user"
 sudo install -D -m 0755 "$helper_source" "$helper_target"
+sudo install -D -m 0755 "$sleep_hook_source" "$sleep_hook_target"
 sudo install -D -m 0644 "$rule_tmp" "$rule_target"
 sudo install -D -m 0644 "$service_source" "$service_target"
 sudo systemctl daemon-reload
@@ -44,5 +47,5 @@ else
     kpackagetool6 --type Plasma/Applet --install "$project_dir"
 fi
 
-printf '\nInstallation complete. Add “Battery Charge Limits” from the Plasma widget browser.\n'
+printf '\nInstallation complete. Add “ThinkCharge” from the Plasma widget browser.\n'
 printf 'If an existing widget does not refresh, log out and back in once.\n'
