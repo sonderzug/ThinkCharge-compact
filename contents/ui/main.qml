@@ -633,21 +633,26 @@ PlasmoidItem {
             anchors.leftMargin: parent.horizontalPadding
             anchors.verticalCenter: parent.verticalCenter
             spacing: Kirigami.Units.smallSpacing
-            Text { text: root.formatPower(); color: Kirigami.Theme.disabledTextColor }
-            Text { text: root.formatDuration(root.hoursToTarget); color: Kirigami.Theme.disabledTextColor }
-            Text { text: root.capacity >= 0 && root.currentEnd >= 0 ? root.capacity + "% / " + root.currentEnd + "%" : "—"; color: Kirigami.Theme.textColor }
+          //  Text { text: root.formatPower(); color: Kirigami.Theme.disabledTextColor }
+          //  Text { text: root.formatDuration(root.hoursToTarget); color: Kirigami.Theme.disabledTextColor }
+         //   Text { text: root.capacity >= 0 && root.currentEnd >= 0 ? root.currentStart + "/" + root.currentEnd + " " : "—"; font.pointSize: 8; color: Kirigami.Theme.textColor }
+            Text { text: root.capacity >= 0 && root.currentEnd >= 0 ? root.currentStart + "%\n" + root.currentEnd + "%" : "—"; font.pointSize: 7; color: Kirigami.Theme.textColor }
+            //  Text { text: root.capacity >= 0 && root.currentEnd >= 0 ? root.capacity + "% / " + root.currentEnd + "%" : "—"; color: Kirigami.Theme.textColor }
             BatteryGlyph {
-                Layout.preferredWidth: 24; Layout.preferredHeight: 14
+                visible: Plasmoid.configuration.showBattery
+                Layout.preferredWidth: 22; Layout.preferredHeight: 10
                 glyphColor: Kirigami.Theme.textColor
                 targetFillLevel: root.currentEnd / 100
                 actualFillLevel: root.capacity / 100
                 charging: root.charging
             }
             PlasmaCore.ToolTipArea {
-                visible: root.currentPowerProfile !== "unknown"
+                // visible: root.currentPowerProfile !== "unknown"
+                visible: Plasmoid.configuration.showPowerMode
                 Layout.preferredWidth: visible ? 16 : 0
                 Layout.preferredHeight: 16
                 mainText: root.powerProfileName(root.currentPowerProfile)
+
                 Kirigami.Icon {
                     anchors.fill: parent
                     source: root.powerProfileIconName()
@@ -703,10 +708,10 @@ PlasmoidItem {
                     root.pendingPowerProfileNotify = ""
                     var powerError = (data["stderr"] || "").trim().split("\n").pop()
                     root.statusMessage = powerError || i18n("Could not change the power profile.")
-                } else if (root.pendingPowerProfileNotify.length) {
-                    root.notifyChange(i18n("Power profile switched to %1.", root.powerProfileName(root.pendingPowerProfileNotify)))
-                    root.pendingPowerProfileNotify = ""
-                }
+                }// else if (root.pendingPowerProfileNotify.length) {
+                  //  root.notifyChange(i18n("Power profile switched to %1.", root.powerProfileName(root.pendingPowerProfileNotify)))
+                 //   root.pendingPowerProfileNotify = ""
+               // }
                 return
             }
             if (source.indexOf("kwriteconfig6 ") === 0) {
@@ -756,4 +761,5 @@ PlasmoidItem {
         onTriggered: root.commitDockingState()
     }
     Component.onCompleted: { loadProfiles(); refreshDisplayModes() }
+
 }

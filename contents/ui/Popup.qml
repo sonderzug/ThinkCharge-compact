@@ -189,16 +189,20 @@ Item {
                     text: i18n("Full")
                     enabled: root.helperInstalled
                     checkable: true
+                    Controls.ToolTip.visible: hovered
+                    Controls.ToolTip.text: i18n("Auf 100% laden")
                     checked: root.temporaryMode === "FULL"
                     Layout.fillWidth: true
                     onClicked: root.toggleTemporary("FULL")
                 }
                 Controls.Button {
-                    text: i18n("Safe full")
+                    text: i18n("Safe full (80%)")
                     enabled: root.helperInstalled
                     checkable: true
                     checked: root.temporaryMode === "SAFE_FULL"
                     Layout.fillWidth: true
+                    Controls.ToolTip.visible: hovered
+                    Controls.ToolTip.text: i18n("Auf 80% laden")
                     onClicked: root.toggleTemporary("SAFE_FULL")
                 }
             }
